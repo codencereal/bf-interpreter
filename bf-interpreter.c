@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #define STACK_MAX 10
 #define TRUE 1
 #define FALSE 0
@@ -9,15 +11,8 @@
 
 enum BFCommands {NEXT_CELL, PREVIOUS_CELL, INCREMENT, DECREMENT, OUTPUT, INPUT, LOOP_START, LOOP_END};
 
+//Function prototypes
 int isBFCommand(char c);
-
-typedef struct Node
-{
-  unsigned char value;
-  struct Node* prev;
-  struct Node* next;
-} Node;
-
 
 int main (int argc, char *argv[]) {
   if (argc != 2) { // Check for valid arguments
@@ -30,7 +25,6 @@ int main (int argc, char *argv[]) {
     printf("File does not exist or did not open");
   }
 
-  Node list;
   unsigned char array[30000] = {0};
   unsigned char *ptr = array;
   unsigned int loopStart, loopEnd;
@@ -60,7 +54,7 @@ int main (int argc, char *argv[]) {
         
         case OUTPUT:
           if ((void *)ptr < (void*)&array) {
-            printf("Underflow at character %d", ftell(pFile));
+            printf("Underflow at character %d", ftell(pFile)); // Check for underflow
             return -1;
           }
           putchar(*ptr);
@@ -94,21 +88,12 @@ int main (int argc, char *argv[]) {
       }
   }
   fclose(pFile);
+  getchar();
   return 0;
 }
 
-// int findLoopEnd(int offset, FILE** file) {
-//   char c;
-//   while((c=fgetc(*file)) != ']') {
-//     if (c == '[')
-//       findLoopEnd(ftell(*file), &*file);
-//     if (c == EOF)
-//       return -1;
-//   }
-//   return ftell(*file);
-// }
-
 int isBFCommand(char c) {
+  // Determines if a char is one of the 8 valid brainfuck commands
   const char bfChars[8] = {">" "<" "+" "-" "." "," "[" "]"};
 
   for (int i = 0; i < 8; ++i)
